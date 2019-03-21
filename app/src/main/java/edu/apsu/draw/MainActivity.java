@@ -1,16 +1,24 @@
 package edu.apsu.draw;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     ImageView imageView;
@@ -22,15 +30,21 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        PaintView paintView = new PaintView(this);
+        setContentView(paintView);
+        //setContentView(R.layout.activity_main);
 
+    }
+}
+
+        /*
 
         imageView = findViewById(R.id.imageview);
 
         findViewById(R.id.rotate_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                angle = angle + 90;
+                angle = angle - 90;
                 imageView.setRotation(angle);
             }
         });
@@ -86,4 +100,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 }
+*/
+
+
 
