@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Draw</string>
+    <string name="menu_rotate_photo">Add Joke</string>
+    <string name="menu_edit_joke">Edit Joke</string>
+    <string name="menu_delete_joke">Delete Joke</string>
+    <string name="title_activity_joke_show">JokeActivityShow</string>
+    <string name="title_activity_edit">ActivityEdit</string>
 </resources>

@@ -10,6 +10,8 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -43,16 +45,40 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.take_photo_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(intent, CAMERA_IMAGE);
+                openCamera();
             }
         });
+    }
+
+    // adds the menu to the activity
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    // selects which menu option is clicked
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_rotate_photo) {
+            imageView.setRotation(180);
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     // opens the gallery and allows the user to select a photo
     private void openGallery() {
         Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
         startActivityForResult(gallery, PICK_IMAGE);
+        TextView tv = findViewById(R.id.select_photo_tv);
+        tv.setText("");
+    }
+
+    private void openCamera() {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(intent, CAMERA_IMAGE);
         TextView tv = findViewById(R.id.select_photo_tv);
         tv.setText("");
     }
