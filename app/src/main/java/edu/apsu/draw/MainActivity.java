@@ -2,10 +2,6 @@ package edu.apsu.draw;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
@@ -16,13 +12,12 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.net.URI;
-
 public class MainActivity extends AppCompatActivity {
     ImageView imageView;
     private static final int PICK_IMAGE = 100;
     private static final int CAMERA_IMAGE = 101;
     Uri imageURI;
+    int angle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +43,14 @@ public class MainActivity extends AppCompatActivity {
                 openCamera();
             }
         });
+
+        findViewById(R.id.rotate_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                angle = angle + 90;
+                imageView.setRotation(angle);
+            }
+        });
     }
 
     // adds the menu to the activity
@@ -63,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.action_rotate_photo) {
-            imageView.setRotation(180);
+            rotatePhoto();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -83,6 +86,9 @@ public class MainActivity extends AppCompatActivity {
         tv.setText("");
     }
 
+    private void rotatePhoto() {
+
+    }
 
     // depending on which button the user presses either the camera will load or the gallery will load
     @Override
