@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Draw</string>
-    <string name="menu_rotate_photo">Rotate Photo</string>
+    <string name="menu_add_photo">Select Photo</string>
+    <string name="menu_add_photo_from_camera">Take Photo</string>
 </resources>

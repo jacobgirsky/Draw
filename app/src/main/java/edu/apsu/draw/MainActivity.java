@@ -27,23 +27,6 @@ public class MainActivity extends AppCompatActivity {
 
         imageView = findViewById(R.id.imageview);
 
-
-        // onClickListener for the choose photo button
-        findViewById(R.id.choose_photo_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openGallery();
-            }
-        });
-
-
-        findViewById(R.id.take_photo_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openCamera();
-            }
-        });
-
         findViewById(R.id.rotate_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -65,8 +48,10 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.action_rotate_photo) {
-            rotatePhoto();
+        if (id == R.id.action_add_photo) {
+            openGallery();
+        } else if (id == R.id.action_add_photo_from_camera) {
+            openCamera();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -84,10 +69,6 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(intent, CAMERA_IMAGE);
         TextView tv = findViewById(R.id.select_photo_tv);
         tv.setText("");
-    }
-
-    private void rotatePhoto() {
-
     }
 
     // depending on which button the user presses either the camera will load or the gallery will load
