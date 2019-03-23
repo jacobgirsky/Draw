@@ -7,8 +7,11 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -23,16 +26,13 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
+import yuku.ambilwarna.AmbilWarnaDialog;
+
 public class MainActivity extends AppCompatActivity {
     ImageView imageView;
-    private static final int PICK_IMAGE = 100;
+    private static final int IMAGE1 = 100;
     private static final int CAMERA_IMAGE = 101;
-    Uri imageURI;
     int angle;
-//    TextView tv = findViewById(R.id.select_photo_tv);
-
-
-    final int IMAGE1 = 1;
 
     Uri source;
     Bitmap bitmapReal;
@@ -41,6 +41,8 @@ public class MainActivity extends AppCompatActivity {
 
     int xStep;
     int yStep;
+
+    int defaultColor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +56,9 @@ public class MainActivity extends AppCompatActivity {
         paint.setStyle(Paint.Style.FILL);
         paint.setColor(Color.RED);
         paint.setStrokeWidth(20);
+
+        defaultColor = ContextCompat.getColor(MainActivity.this, R.color.colorPrimary);
+
 
         findViewById(R.id.rotate_button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,6 +93,23 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    public void openColorPicker() {
+        AmbilWarnaDialog colorPicker = new AmbilWarnaDialog(this, defaultColor, new AmbilWarnaDialog.OnAmbilWarnaListener() {
+            @Override
+            public void onCancel(AmbilWarnaDialog dialog) {
+
+            }
+
+            @Override
+            public void onOk(AmbilWarnaDialog dialog, int color) {
+                defaultColor = color;
+                paint.setColor(defaultColor);
+            }
+        });
+        colorPicker.show();
+    }
+
 
     // get position of image so the bitmap can draw on it
     private void drawOnBitMap(ImageView imgV, Bitmap bm, float x1, float y1, float x, float y) {
@@ -154,27 +176,46 @@ public class MainActivity extends AppCompatActivity {
         if (id == R.id.action_add_photo) {
             openGallery();
         } else if (id == R.id.action_add_photo_from_camera) {
-            openCamera();
+            //openCamera();
+        }
+         else if (id == R.id.action_change_color) {
+             openColorPicker();
         }
         return super.onOptionsItemSelected(item);
     }
 
     // opens the gallery and allows the user to select a photo
     private void openGallery() {
-        Intent intent = new Intent(Intent.ACTION_PICK,
-                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent, IMAGE1);
         TextView tv = findViewById(R.id.select_photo_tv);
         tv.setText("");
     }
 
+    public void clear() {
+
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+    /*
     private void openCamera() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         startActivityForResult(intent, CAMERA_IMAGE);
         TextView tv = findViewById(R.id.select_photo_tv);
         tv.setText("");
     }
-}
+    */
+
 
 
 
