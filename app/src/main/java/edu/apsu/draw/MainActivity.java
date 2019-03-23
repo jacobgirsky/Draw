@@ -3,6 +3,7 @@ package edu.apsu.draw;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -10,6 +11,7 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -17,6 +19,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,20 +29,31 @@ public class MainActivity extends AppCompatActivity {
     private static final int CAMERA_IMAGE = 101;
     Uri imageURI;
     int angle;
+//    TextView tv = findViewById(R.id.select_photo_tv);
+
+
+    final int IMAGE1 = 1;
+
+    Uri source;
+    Bitmap bitmapReal;
+    Canvas canvas;
+    Paint paint;
+
+    int xStep;
+    int yStep;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        PaintView paintView = new PaintView(this);
-        setContentView(paintView);
-        //setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main);
 
-    }
-}
+        imageView = findViewById(R.id.result);
 
-        /*
-
-        imageView = findViewById(R.id.imageview);
+        // set up the paint for intital drawing
+        paint = new Paint();
+        paint.setStyle(Paint.Style.FILL);
+        paint.setColor(Color.RED);
+        paint.setStrokeWidth(20);
 
         findViewById(R.id.rotate_button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -48,6 +62,81 @@ public class MainActivity extends AppCompatActivity {
                 imageView.setRotation(angle);
             }
         });
+
+        // gets the touch input from the user
+        imageView.setOnTouchListener(new View.OnTouchListener() {
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+
+                int eventAction = event.getAction();
+                int x = (int) event.getX();
+                int y = (int) event.getY();
+
+                if (eventAction == MotionEvent.ACTION_DOWN) {
+                    xStep = x;
+                    yStep = y;
+                    drawOnBitMap((ImageView) v, bitmapReal, xStep, yStep, x, y);
+                } else if (eventAction == MotionEvent.ACTION_MOVE) {
+                    drawOnBitMap((ImageView) v, bitmapReal, xStep, yStep, x, y);
+                    xStep = x;
+                    yStep = y;
+                } else if (eventAction == MotionEvent.ACTION_UP) {
+                    drawOnBitMap((ImageView) v, bitmapReal, xStep, yStep, x, y);
+                }
+                return true;
+            }
+        });
+    }
+
+    // get position of image so the bitmap can draw on it
+    private void drawOnBitMap(ImageView imgV, Bitmap bm, float x1, float y1, float x, float y) {
+        if (x < 0 || y < 0 || x > imgV.getWidth() || y > imgV.getHeight()) { // if it is outside of the image
+            return;
+        } else {
+
+            float width = (float) bm.getWidth() / (float) imgV.getWidth();
+            float height = (float) bm.getHeight() / (float) imgV.getHeight();
+
+            canvas.drawLine(x1 * width, y1 * height, x * width, y * height, paint);
+            imageView.invalidate();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        Bitmap bitmap;
+
+        if (resultCode == RESULT_OK) {
+
+
+            if (requestCode == IMAGE1) {
+                source = data.getData();
+                try {
+                    bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(source));
+
+                    Bitmap.Config config;
+                    if (bitmap.getConfig() != null) {
+                        config = bitmap.getConfig();
+
+                    } else {
+                        config = Bitmap.Config.ARGB_8888;
+                    }
+
+                    bitmapReal = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), config);
+
+                    canvas = new Canvas(bitmapReal);
+                    canvas.drawBitmap(bitmap, 0, 0, null);
+
+                    imageView.setImageBitmap(bitmapReal);
+
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     // adds the menu to the activity
@@ -72,8 +161,9 @@ public class MainActivity extends AppCompatActivity {
 
     // opens the gallery and allows the user to select a photo
     private void openGallery() {
-        Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
-        startActivityForResult(gallery, PICK_IMAGE);
+        Intent intent = new Intent(Intent.ACTION_PICK,
+                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(intent, IMAGE1);
         TextView tv = findViewById(R.id.select_photo_tv);
         tv.setText("");
     }
@@ -84,7 +174,31 @@ public class MainActivity extends AppCompatActivity {
         TextView tv = findViewById(R.id.select_photo_tv);
         tv.setText("");
     }
+}
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /*
     // depending on which button the user presses either the camera will load or the gallery will load
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -97,10 +211,11 @@ public class MainActivity extends AppCompatActivity {
             imageView.setImageBitmap(bitmap);
         }
     }
+    */
 
 
-}
-*/
+
+
 
 
 
