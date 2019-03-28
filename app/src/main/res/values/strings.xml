@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Draw</string>
     <string name="menu_add_photo">Select Photo</string>
-    <string name="menu_add_photo_from_camera">Take Photo</string>
     <string name="menu_change_color">Change Color</string>
-    <string name="menu_clear">Clear Drawing</string>
+    <string name="menu_clear_canvas">Clear Canvas</string>
+    <string name="menu_change_brush_size">Clear Canvas</string>
 </resources>

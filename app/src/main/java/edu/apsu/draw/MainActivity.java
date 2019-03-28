@@ -1,19 +1,24 @@
 package edu.apsu.draw;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,6 +26,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -31,7 +37,6 @@ import yuku.ambilwarna.AmbilWarnaDialog;
 public class MainActivity extends AppCompatActivity {
     ImageView imageView;
     private static final int IMAGE1 = 100;
-    private static final int CAMERA_IMAGE = 101;
     int angle;
 
     Uri source;
@@ -43,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     int yStep;
 
     int defaultColor;
+    int num = 40;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
                 imageView.setRotation(angle);
             }
         });
+
 
         // gets the touch input from the user
         imageView.setOnTouchListener(new View.OnTouchListener() {
@@ -94,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    // allows the user to change the pen color
     public void openColorPicker() {
         AmbilWarnaDialog colorPicker = new AmbilWarnaDialog(this, defaultColor, new AmbilWarnaDialog.OnAmbilWarnaListener() {
             @Override
@@ -175,11 +183,15 @@ public class MainActivity extends AppCompatActivity {
 
         if (id == R.id.action_add_photo) {
             openGallery();
-        } else if (id == R.id.action_add_photo_from_camera) {
-            //openCamera();
         }
          else if (id == R.id.action_change_color) {
              openColorPicker();
+        } else if (id == R.id.action_clear_canvas) {
+             clearCanvas();
+        } else if (id == R.id.action_change_brush_size) {
+             paint.setStrokeWidth(num);
+             num += 20;
+
         }
         return super.onOptionsItemSelected(item);
     }
@@ -192,67 +204,35 @@ public class MainActivity extends AppCompatActivity {
         tv.setText("");
     }
 
-    public void clear() {
+    // clears the canvas
+    public void clearCanvas() {
+        if (imageView.getDrawable() != null) {
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+            alertDialogBuilder.setMessage("Are you sure, you want to delete this picture?");
+            alertDialogBuilder.setPositiveButton("yes",
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface arg0, int arg1) {
+                            bitmapReal.eraseColor(Color.TRANSPARENT);
+                            imageView.setImageBitmap(bitmapReal);
+                            imageView.invalidate();
+                        }
+                    });
 
+            alertDialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+
+                public void onClick(DialogInterface dialog, int which) {
+
+                }
+            });
+
+
+            AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialog.show();
+        }
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-    /*
-    private void openCamera() {
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(intent, CAMERA_IMAGE);
-        TextView tv = findViewById(R.id.select_photo_tv);
-        tv.setText("");
-    }
-    */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /*
-    // depending on which button the user presses either the camera will load or the gallery will load
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK && requestCode == PICK_IMAGE) {
-            imageURI = data.getData();
-            imageView.setImageURI(imageURI);
-        } else if (resultCode == RESULT_OK && requestCode == CAMERA_IMAGE) {
-            Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-            imageView.setImageBitmap(bitmap);
-        }
-    }
-    */
 
 
 
