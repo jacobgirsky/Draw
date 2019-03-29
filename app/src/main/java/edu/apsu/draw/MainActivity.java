@@ -1,5 +1,6 @@
 package edu.apsu.draw;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -11,7 +12,9 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -21,6 +24,7 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -30,9 +34,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import yuku.ambilwarna.AmbilWarnaDialog;
 
@@ -50,8 +58,9 @@ public class MainActivity extends AppCompatActivity {
     int yStep;
 
     int defaultColor;
-    int num = 40;
 
+
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,13 +68,8 @@ public class MainActivity extends AppCompatActivity {
 
         imageView = findViewById(R.id.result);
 
-        // set up the paint for intital drawing
-        paint = new Paint();
-        paint.setStyle(Paint.Style.FILL);
-        paint.setColor(Color.RED);
-        paint.setStrokeWidth(20);
-
-        defaultColor = ContextCompat.getColor(MainActivity.this, R.color.colorPrimary);
+        setUpPaint();
+        //defaultColor = ContextCompat.getColor(MainActivity.this, R.color.colorPrimary);
 
 
         findViewById(R.id.rotate_button).setOnClickListener(new View.OnClickListener() {
@@ -73,6 +77,13 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 angle = angle - 90;
                 imageView.setRotation(angle);
+            }
+        });
+
+        findViewById(R.id.save_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                
             }
         });
 
@@ -197,6 +208,15 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    // set up the paint for intital drawing
+    public void setUpPaint() {
+        paint = new Paint();
+        paint.setStyle(Paint.Style.FILL);
+        paint.setColor(Color.RED);
+        paint.setStrokeWidth(20);
+
+    }
+
     // opens the gallery and allows the user to select a photo
     private void openGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -249,17 +269,15 @@ public class MainActivity extends AppCompatActivity {
                     });
 
             alertDialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-
                 public void onClick(DialogInterface dialog, int which) {
 
                 }
             });
-
-
             AlertDialog alertDialog = alertDialogBuilder.create();
             alertDialog.show();
         }
     }
+
 }
 
 
