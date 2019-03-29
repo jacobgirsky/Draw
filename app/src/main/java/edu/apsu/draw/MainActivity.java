@@ -69,8 +69,6 @@ public class MainActivity extends AppCompatActivity {
         imageView = findViewById(R.id.result);
 
         setUpPaint();
-        //defaultColor = ContextCompat.getColor(MainActivity.this, R.color.colorPrimary);
-
 
         findViewById(R.id.rotate_button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -115,6 +113,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // allows the user to change the pen color
+    // Gto fromitneem
     public void openColorPicker() {
         AmbilWarnaDialog colorPicker = new AmbilWarnaDialog(this, defaultColor, new AmbilWarnaDialog.OnAmbilWarnaListener() {
             @Override
@@ -203,7 +202,8 @@ public class MainActivity extends AppCompatActivity {
              clearCanvas();
         } else if (id == R.id.action_change_brush_size) {
              changeBrushSize();
-
+        } else if (id == R.id.action_draw_rectangle) {
+             
         }
         return super.onOptionsItemSelected(item);
     }
