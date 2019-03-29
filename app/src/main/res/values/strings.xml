@@ -4,4 +4,5 @@
     <string name="menu_change_color">Change Color</string>
     <string name="menu_clear_canvas">Clear Canvas</string>
     <string name="menu_change_brush_size">Clear Canvas</string>
+    <string name="menu_draw_rectangle">Draw Rectangle</string>
 </resources>

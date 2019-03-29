@@ -17,6 +17,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.DisplayMetrics;
@@ -24,6 +25,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -189,8 +191,7 @@ public class MainActivity extends AppCompatActivity {
         } else if (id == R.id.action_clear_canvas) {
              clearCanvas();
         } else if (id == R.id.action_change_brush_size) {
-             paint.setStrokeWidth(num);
-             num += 20;
+             changeBrushSize();
 
         }
         return super.onOptionsItemSelected(item);
@@ -202,6 +203,32 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(intent, IMAGE1);
         TextView tv = findViewById(R.id.select_photo_tv);
         tv.setText("");
+    }
+
+    // allows user to change brush size
+    public void changeBrushSize() {
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        final EditText edittext = new EditText(getApplicationContext());
+        alert.setTitle("Enter the size you want: ");
+
+        alert.setView(edittext);
+
+        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                String youEditTextValue = edittext.getText().toString();
+                int result = Integer.parseInt(youEditTextValue);
+                paint.setStrokeWidth(result);
+
+            }
+        });
+
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+
+            }
+        });
+
+        alert.show();
     }
 
     // clears the canvas
@@ -216,6 +243,8 @@ public class MainActivity extends AppCompatActivity {
                             bitmapReal.eraseColor(Color.TRANSPARENT);
                             imageView.setImageBitmap(bitmapReal);
                             imageView.invalidate();
+                            TextView tv = findViewById(R.id.select_photo_tv);
+                            tv.setText("Select the menu to add a photo to start drawing!");
                         }
                     });
 
