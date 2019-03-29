@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/action_add_photo"
+        android:title="@string/menu_add_photo">
+    </item>
+
+    <item
+        android:id="@+id/action_change_color"
+        android:title="Change Color">
+
+    </item>
+    <item
+        android:id="@+id/action_clear_canvas"
+        android:title="Clear Canvas">
+
+    </item>
+    <item
+        android:id="@+id/action_change_brush_size"
+        android:title="Brush Size">
+
+    </item>
+    <item
+        android:id="@+id/action_draw_rectangle"
+        android:title="Draw Rectangle">
+
+    </item>
+</menu>

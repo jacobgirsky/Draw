@@ -203,7 +203,7 @@ public class MainActivity extends AppCompatActivity {
         } else if (id == R.id.action_change_brush_size) {
              changeBrushSize();
         } else if (id == R.id.action_draw_rectangle) {
-             
+
         }
         return super.onOptionsItemSelected(item);
     }
