@@ -5,4 +5,5 @@
     <string name="menu_clear_canvas">Clear Canvas</string>
     <string name="menu_change_brush_size">Clear Canvas</string>
     <string name="menu_draw_rectangle">Draw Rectangle</string>
+    <string name="menu_add_font">Add Text</string>
     </resources>

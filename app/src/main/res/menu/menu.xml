@@ -26,4 +26,9 @@
         android:title="Draw Rectangle">
 
     </item>
+    <item
+        android:id="@+id/action_add_text"
+        android:title="Add Text">
+
+    </item>
 </menu>

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -12,6 +13,9 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
+import android.graphics.RectF;
+import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Environment;
@@ -81,7 +85,29 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.save_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                BitmapDrawable btmpDr = (BitmapDrawable) imageView.getDrawable();
+                Bitmap bmp = btmpDr.getBitmap();
 
+                try
+                {
+                    File sdCardDirectory = new File(Environment.getExternalStorageDirectory() + "/DCIM");
+
+                    String imageNameForSDCard = "1.jpg";
+
+                    File image = new File(sdCardDirectory, imageNameForSDCard);
+                    FileOutputStream outStream;
+                    outStream = new FileOutputStream(image);
+                    bmp.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
+                    /* 100 to keep full quality of the image */
+                    outStream.flush();
+                    outStream.close();
+                    //Refreshing SD card
+                    sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://"+ Environment.getExternalStorageDirectory())));
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -203,12 +229,45 @@ public class MainActivity extends AppCompatActivity {
         } else if (id == R.id.action_change_brush_size) {
              changeBrushSize();
         } else if (id == R.id.action_draw_rectangle) {
-
+             drawRectangle(imageView,bitmapReal,xStep,yStep,xStep,yStep);
         }
+        /**else if (id == R.id.action_add_text) {
+          addText();
+        }**/
         return super.onOptionsItemSelected(item);
     }
 
-    // set up the paint for intital drawing
+    private void drawRectangle(ImageView imgV, Bitmap bm, float x1, float y1, float x, float y) {
+
+        // Load image into(as) bitmap
+        paint.setAntiAlias(true);
+        // Fill with color
+        paint.setStyle(Paint.Style.FILL);
+        // Set fill color
+        paint.setColor(Color.BLACK);
+
+        // Create Temp bitmap
+        Bitmap tBitmap = Bitmap.createBitmap(bitmapReal.getWidth(), bitmapReal.getHeight(), Bitmap.Config.RGB_565);
+        // Create a new canvas and add Bitmap into it
+        Canvas tCanvas = new Canvas(tBitmap);
+        //Draw the image bitmap into the canvas
+        tCanvas.drawBitmap(bitmapReal, 0, 0, null);
+        // Draw a rectangle over canvas
+        tCanvas.drawRoundRect(new RectF(0,0,200,100), 2, 2, paint);
+        // Add canvas into ImageView
+        imageView.setImageDrawable(new BitmapDrawable(getResources(), tBitmap));
+
+    }
+
+    /** private void addText() {
+        EditText et = new EditText(getApplicationContext());
+
+        Typeface custom_font = Typeface.createFromAsset(getAssets(),  "NicRegular.ttf");
+
+        et.setTypeface(custom_font);
+    }**/
+
+    // set up the paint for initial drawing
     public void setUpPaint() {
         paint = new Paint();
         paint.setStyle(Paint.Style.FILL);
