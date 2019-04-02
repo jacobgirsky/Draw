@@ -1,9 +1,11 @@
 package edu.apsu.draw;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -20,6 +22,7 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -33,6 +36,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -49,7 +53,11 @@ import java.util.Random;
 import yuku.ambilwarna.AmbilWarnaDialog;
 
 public class MainActivity extends AppCompatActivity {
-    ImageView imageView;
+
+    private static final int MY_PERMISSION_REQUIST = 1;
+    ImageView imageView, imageFilter;
+    Button filter_button;
+    String currentImage = "";
     private static final int IMAGE1 = 100;
     int angle;
 
@@ -68,9 +76,30 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main2);
+
+        //ask for storage permission:
+        if (ContextCompat.checkSelfPermission(MainActivity.this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                ActivityCompat.requestPermissions(MainActivity.this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSION_REQUIST);
+
+            } else {
+                ActivityCompat.requestPermissions(MainActivity.this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSION_REQUIST);
+            }
+        } else {
+            // do nothing
+        }
 
         imageView = findViewById(R.id.result);
+        imageFilter = findViewById(R.id.filter);
+        filter_button = findViewById(R.id.apply_button);
+
+
+
 
         setUpPaint();
 
@@ -85,31 +114,23 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.save_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                BitmapDrawable btmpDr = (BitmapDrawable) imageView.getDrawable();
-                Bitmap bmp = btmpDr.getBitmap();
+                View content = findViewById(R.id.lay);
+                Bitmap bitmap = getScreenShot(content);
+                currentImage = "image" + System.currentTimeMillis() + ".png";
+                store(bitmap, currentImage);
+            }
 
-                try
-                {
-                    File sdCardDirectory = new File(Environment.getExternalStorageDirectory() + "/DCIM");
+        });
 
-                    String imageNameForSDCard = "1.jpg";
-
-                    File image = new File(sdCardDirectory, imageNameForSDCard);
-                    FileOutputStream outStream;
-                    outStream = new FileOutputStream(image);
-                    bmp.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
-                    /* 100 to keep full quality of the image */
-                    outStream.flush();
-                    outStream.close();
-                    //Refreshing SD card
-                    sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://"+ Environment.getExternalStorageDirectory())));
-                }
-                catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
+        filter_button.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                imageFilter.setImageResource(R.drawable.filter);
             }
         });
+
+
+
 
 
         // gets the touch input from the user
@@ -136,6 +157,13 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+    }
+
+    private static Bitmap getScreenShot(View view){
+        view.setDrawingCacheEnabled(true);
+        Bitmap bitmap = Bitmap.createBitmap(view.getDrawingCache());
+        view.setDrawingCacheEnabled(false);
+        return bitmap;
     }
 
     // allows the user to change the pen color
@@ -334,6 +362,26 @@ public class MainActivity extends AppCompatActivity {
             });
             AlertDialog alertDialog = alertDialogBuilder.create();
             alertDialog.show();
+        }
+    }
+
+    // saving the image in internal storage:
+    private void store(Bitmap bm, String fileName){
+        String dirPath = Environment.getExternalStorageDirectory().getAbsolutePath()+ "/FILTEREDIMAGES";
+        File dir = new File(dirPath);
+        if(!dir.exists()){
+            dir.mkdirs();
+        }
+        File file = new File(dirPath, fileName);
+        try{
+            FileOutputStream fos = new FileOutputStream(file);
+            bitmapReal.compress(Bitmap.CompressFormat.PNG, 100, fos);
+            fos.flush();
+            fos.close();
+            Toast.makeText(this, "saved!", Toast.LENGTH_LONG).show();
+
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 
