@@ -125,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
         filter_button.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                imageFilter.setImageResource(R.drawable.filter);
+                imageFilter.setImageResource(R.drawable.filter2);
             }
         });
 
@@ -381,7 +381,7 @@ public class MainActivity extends AppCompatActivity {
             bitmapReal.compress(Bitmap.CompressFormat.PNG, 100, fos);
             fos.flush();
             fos.close();
-            Toast.makeText(this, "saved!", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "saved!", Toast.LENGTH_SHORT).show();
 
         }catch (Exception e){
             e.printStackTrace();
