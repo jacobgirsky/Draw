@@ -28,6 +28,20 @@
                 android:scaleType="fitXY"
                 android:layout_centerInParent="true"
                 android:adjustViewBounds="true"/>
+
+        <EditText
+            android:id="@+id/editText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/filter"
+            android:layout_alignTop="@+id/filter"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:gravity="center"
+            android:layout_centerInParent="true"
+            android:textSize="30sp"
+            android:background="@android:color/transparent"
+            android:inputType="textMultiLine|textVisiblePassword"/>
     </RelativeLayout>
 
     <TextView

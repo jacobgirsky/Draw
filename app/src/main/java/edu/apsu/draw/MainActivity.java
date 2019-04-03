@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int MY_PERMISSION_REQUIST = 1;
     ImageView imageView, imageFilter;
+    EditText editText;
     Button filter_button;
     String currentImage = "";
     private static final int IMAGE1 = 100;
@@ -93,9 +94,10 @@ public class MainActivity extends AppCompatActivity {
         } else {
             // do nothing
         }
-
         imageView = findViewById(R.id.result);
         imageFilter = findViewById(R.id.filter);
+        editText = findViewById(R.id.editText);
+        editText.setVisibility(View.INVISIBLE);
         filter_button = findViewById(R.id.apply_button);
         filter_button.setEnabled(false);
 
@@ -259,9 +261,9 @@ public class MainActivity extends AppCompatActivity {
         } else if (id == R.id.action_draw_rectangle) {
              drawRectangle(imageView,bitmapReal,xStep,yStep,xStep,yStep);
         }
-        /**else if (id == R.id.action_add_text) {
+        else if (id == R.id.action_add_text) {
           addText();
-        }**/
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -287,13 +289,14 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    /** private void addText() {
-        EditText et = new EditText(getApplicationContext());
+    private void addText() {
+        //EditText et = new EditText(getApplicationContext());
+        editText.setVisibility(View.VISIBLE);
 
         Typeface custom_font = Typeface.createFromAsset(getAssets(),  "NicRegular.ttf");
 
-        et.setTypeface(custom_font);
-    }**/
+        editText.setTypeface(custom_font);
+    }
 
     // set up the paint for initial drawing
     public void setUpPaint() {
@@ -353,6 +356,8 @@ public class MainActivity extends AppCompatActivity {
                             imageView.invalidate();
                             imageFilter.setImageDrawable(null);
                             filter_button.setEnabled(false);
+                            editText.setText("");
+                            editText.setVisibility(View.INVISIBLE);
                             TextView tv = findViewById(R.id.select_photo_tv);
                             tv.setText("Select the menu to add a photo to start drawing!");
                         }
