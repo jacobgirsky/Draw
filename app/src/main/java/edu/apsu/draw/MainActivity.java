@@ -272,7 +272,7 @@ public class MainActivity extends AppCompatActivity {
         // Fill with color
         paint.setStyle(Paint.Style.FILL);
         // Set fill color
-        paint.setColor(Color.BLACK);
+        paint.setColor(Color.BLUE);
 
         // Create Temp bitmap
         Bitmap tBitmap = Bitmap.createBitmap(bitmapReal.getWidth(), bitmapReal.getHeight(), Bitmap.Config.RGB_565);
