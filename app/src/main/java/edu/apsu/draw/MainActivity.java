@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
         imageView = findViewById(R.id.result);
         imageFilter = findViewById(R.id.filter);
         filter_button = findViewById(R.id.apply_button);
-
+        filter_button.setEnabled(false);
 
 
 
@@ -310,6 +310,7 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(intent, IMAGE1);
         TextView tv = findViewById(R.id.select_photo_tv);
         tv.setText("");
+        filter_button.setEnabled(true);
     }
 
     // allows user to change brush size
@@ -350,6 +351,8 @@ public class MainActivity extends AppCompatActivity {
                             bitmapReal.eraseColor(Color.TRANSPARENT);
                             imageView.setImageBitmap(bitmapReal);
                             imageView.invalidate();
+                            imageFilter.setImageDrawable(null);
+                            filter_button.setEnabled(false);
                             TextView tv = findViewById(R.id.select_photo_tv);
                             tv.setText("Select the menu to add a photo to start drawing!");
                         }
