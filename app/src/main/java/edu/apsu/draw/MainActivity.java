@@ -117,9 +117,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 View content = findViewById(R.id.lay);
-                Bitmap bitmap = getScreenShot(content);
+                //Bitmap bitmap = getScreenShot(content);
+                bitmapReal= getScreenShot(content);
                 currentImage = "image" + System.currentTimeMillis() + ".png";
-                store(bitmap, currentImage);
+                store(bitmapReal, currentImage);
             }
 
         });
@@ -128,6 +129,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view){
                 imageFilter.setImageResource(R.drawable.filter2);
+                imageView.invalidate();
             }
         });
 
@@ -286,6 +288,7 @@ public class MainActivity extends AppCompatActivity {
         tCanvas.drawRoundRect(new RectF(0,0,200,100), 2, 2, paint);
         // Add canvas into ImageView
         imageView.setImageDrawable(new BitmapDrawable(getResources(), tBitmap));
+        imageView.invalidate();
 
     }
 
@@ -296,6 +299,7 @@ public class MainActivity extends AppCompatActivity {
         Typeface custom_font = Typeface.createFromAsset(getAssets(),  "NicRegular.ttf");
 
         editText.setTypeface(custom_font);
+        imageView.invalidate();
     }
 
     // set up the paint for initial drawing
@@ -381,6 +385,7 @@ public class MainActivity extends AppCompatActivity {
             dir.mkdirs();
         }
         File file = new File(dirPath, fileName);
+        Log.i("WHERE", file.getAbsolutePath());
         try{
             FileOutputStream fos = new FileOutputStream(file);
             bitmapReal.compress(Bitmap.CompressFormat.PNG, 100, fos);
