@@ -1,9 +1,12 @@
 package edu.apsu.draw;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -12,10 +15,14 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
+import android.graphics.RectF;
+import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -29,6 +36,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -45,7 +53,11 @@ import java.util.Random;
 import yuku.ambilwarna.AmbilWarnaDialog;
 
 public class MainActivity extends AppCompatActivity {
-    ImageView imageView;
+
+    private static final int MY_PERMISSION_REQUIST = 1;
+    ImageView imageView, imageFilter;
+    Button filter_button;
+    String currentImage = "";
     private static final int IMAGE1 = 100;
     int angle;
 
@@ -64,9 +76,30 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main2);
+
+        //ask for storage permission:
+        if (ContextCompat.checkSelfPermission(MainActivity.this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                ActivityCompat.requestPermissions(MainActivity.this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSION_REQUIST);
+
+            } else {
+                ActivityCompat.requestPermissions(MainActivity.this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSION_REQUIST);
+            }
+        } else {
+            // do nothing
+        }
 
         imageView = findViewById(R.id.result);
+        imageFilter = findViewById(R.id.filter);
+        filter_button = findViewById(R.id.apply_button);
+        filter_button.setEnabled(false);
+
+
 
         setUpPaint();
 
@@ -81,9 +114,23 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.save_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                View content = findViewById(R.id.lay);
+                Bitmap bitmap = getScreenShot(content);
+                currentImage = "image" + System.currentTimeMillis() + ".png";
+                store(bitmap, currentImage);
+            }
 
+        });
+
+        filter_button.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                imageFilter.setImageResource(R.drawable.filter);
             }
         });
+
+
+
 
 
         // gets the touch input from the user
@@ -110,6 +157,13 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+    }
+
+    private static Bitmap getScreenShot(View view){
+        view.setDrawingCacheEnabled(true);
+        Bitmap bitmap = Bitmap.createBitmap(view.getDrawingCache());
+        view.setDrawingCacheEnabled(false);
+        return bitmap;
     }
 
     // allows the user to change the pen color
@@ -203,12 +257,45 @@ public class MainActivity extends AppCompatActivity {
         } else if (id == R.id.action_change_brush_size) {
              changeBrushSize();
         } else if (id == R.id.action_draw_rectangle) {
-             // add code
+             drawRectangle(imageView,bitmapReal,xStep,yStep,xStep,yStep);
         }
+        /**else if (id == R.id.action_add_text) {
+          addText();
+        }**/
         return super.onOptionsItemSelected(item);
     }
 
-    // set up the paint for intital drawing
+    private void drawRectangle(ImageView imgV, Bitmap bm, float x1, float y1, float x, float y) {
+
+        // Load image into(as) bitmap
+        paint.setAntiAlias(true);
+        // Fill with color
+        paint.setStyle(Paint.Style.FILL);
+        // Set fill color
+        paint.setColor(Color.BLUE);
+
+        // Create Temp bitmap
+        Bitmap tBitmap = Bitmap.createBitmap(bitmapReal.getWidth(), bitmapReal.getHeight(), Bitmap.Config.RGB_565);
+        // Create a new canvas and add Bitmap into it
+        Canvas tCanvas = new Canvas(tBitmap);
+        //Draw the image bitmap into the canvas
+        tCanvas.drawBitmap(bitmapReal, 0, 0, null);
+        // Draw a rectangle over canvas
+        tCanvas.drawRoundRect(new RectF(0,0,200,100), 2, 2, paint);
+        // Add canvas into ImageView
+        imageView.setImageDrawable(new BitmapDrawable(getResources(), tBitmap));
+
+    }
+
+    /** private void addText() {
+        EditText et = new EditText(getApplicationContext());
+
+        Typeface custom_font = Typeface.createFromAsset(getAssets(),  "NicRegular.ttf");
+
+        et.setTypeface(custom_font);
+    }**/
+
+    // set up the paint for initial drawing
     public void setUpPaint() {
         paint = new Paint();
         paint.setStyle(Paint.Style.FILL);
@@ -223,6 +310,7 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(intent, IMAGE1);
         TextView tv = findViewById(R.id.select_photo_tv);
         tv.setText("");
+        filter_button.setEnabled(true);
     }
 
     // allows user to change brush size
@@ -263,6 +351,8 @@ public class MainActivity extends AppCompatActivity {
                             bitmapReal.eraseColor(Color.TRANSPARENT);
                             imageView.setImageBitmap(bitmapReal);
                             imageView.invalidate();
+                            imageFilter.setImageDrawable(null);
+                            filter_button.setEnabled(false);
                             TextView tv = findViewById(R.id.select_photo_tv);
                             tv.setText("Select the menu to add a photo to start drawing!");
                         }
@@ -275,6 +365,26 @@ public class MainActivity extends AppCompatActivity {
             });
             AlertDialog alertDialog = alertDialogBuilder.create();
             alertDialog.show();
+        }
+    }
+
+    // saving the image in internal storage:
+    private void store(Bitmap bm, String fileName){
+        String dirPath = Environment.getExternalStorageDirectory().getAbsolutePath()+ "/FILTEREDIMAGES";
+        File dir = new File(dirPath);
+        if(!dir.exists()){
+            dir.mkdirs();
+        }
+        File file = new File(dirPath, fileName);
+        try{
+            FileOutputStream fos = new FileOutputStream(file);
+            bitmapReal.compress(Bitmap.CompressFormat.PNG, 100, fos);
+            fos.flush();
+            fos.close();
+            Toast.makeText(this, "saved!", Toast.LENGTH_LONG).show();
+
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 
