@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int MY_PERMISSION_REQUIST = 1;
     ImageView imageView, imageFilter;
+    EditText editText;
     Button filter_button;
     String currentImage = "";
     private static final int IMAGE1 = 100;
@@ -93,9 +94,10 @@ public class MainActivity extends AppCompatActivity {
         } else {
             // do nothing
         }
-
         imageView = findViewById(R.id.result);
         imageFilter = findViewById(R.id.filter);
+        editText = findViewById(R.id.editText);
+        editText.setVisibility(View.INVISIBLE);
         filter_button = findViewById(R.id.apply_button);
         filter_button.setEnabled(false);
 
@@ -115,9 +117,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 View content = findViewById(R.id.lay);
-                Bitmap bitmap = getScreenShot(content);
+                //Bitmap bitmap = getScreenShot(content);
+                bitmapReal= getScreenShot(content);
                 currentImage = "image" + System.currentTimeMillis() + ".png";
-                store(bitmap, currentImage);
+                store(bitmapReal, currentImage);
             }
 
         });
@@ -125,7 +128,8 @@ public class MainActivity extends AppCompatActivity {
         filter_button.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                imageFilter.setImageResource(R.drawable.filter);
+                imageFilter.setImageResource(R.drawable.filter2);
+                imageView.invalidate();
             }
         });
 
@@ -259,9 +263,9 @@ public class MainActivity extends AppCompatActivity {
         } else if (id == R.id.action_draw_rectangle) {
              drawRectangle(imageView,bitmapReal,xStep,yStep,xStep,yStep);
         }
-        /**else if (id == R.id.action_add_text) {
+        else if (id == R.id.action_add_text) {
           addText();
-        }**/
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -284,16 +288,19 @@ public class MainActivity extends AppCompatActivity {
         tCanvas.drawRoundRect(new RectF(0,0,200,100), 2, 2, paint);
         // Add canvas into ImageView
         imageView.setImageDrawable(new BitmapDrawable(getResources(), tBitmap));
+        imageView.invalidate();
 
     }
 
-    /** private void addText() {
-        EditText et = new EditText(getApplicationContext());
+    private void addText() {
+        //EditText et = new EditText(getApplicationContext());
+        editText.setVisibility(View.VISIBLE);
 
         Typeface custom_font = Typeface.createFromAsset(getAssets(),  "NicRegular.ttf");
 
-        et.setTypeface(custom_font);
-    }**/
+        editText.setTypeface(custom_font);
+        imageView.invalidate();
+    }
 
     // set up the paint for initial drawing
     public void setUpPaint() {
@@ -353,6 +360,8 @@ public class MainActivity extends AppCompatActivity {
                             imageView.invalidate();
                             imageFilter.setImageDrawable(null);
                             filter_button.setEnabled(false);
+                            editText.setText("");
+                            editText.setVisibility(View.INVISIBLE);
                             TextView tv = findViewById(R.id.select_photo_tv);
                             tv.setText("Select the menu to add a photo to start drawing!");
                         }
@@ -376,12 +385,13 @@ public class MainActivity extends AppCompatActivity {
             dir.mkdirs();
         }
         File file = new File(dirPath, fileName);
+        Log.i("WHERE", file.getAbsolutePath());
         try{
             FileOutputStream fos = new FileOutputStream(file);
             bitmapReal.compress(Bitmap.CompressFormat.PNG, 100, fos);
             fos.flush();
             fos.close();
-            Toast.makeText(this, "saved!", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "saved!", Toast.LENGTH_SHORT).show();
 
         }catch (Exception e){
             e.printStackTrace();
