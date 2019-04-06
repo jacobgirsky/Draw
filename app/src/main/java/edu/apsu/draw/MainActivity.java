@@ -102,7 +102,6 @@ public class MainActivity extends AppCompatActivity {
         filter_button.setEnabled(false);
 
 
-
         setUpPaint();
 
         findViewById(R.id.rotate_button).setOnClickListener(new View.OnClickListener() {
