@@ -113,8 +113,10 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.rotate_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                angle = angle - 90;
-                imageView.setRotation(angle);
+                if (isPictureLoaded()) {
+                    angle = angle - 90;
+                    imageView.setRotation(angle);
+                }
             }
         });
 
@@ -397,6 +399,7 @@ public class MainActivity extends AppCompatActivity {
         editText.setVisibility(View.INVISIBLE);
         TextView tv = findViewById(R.id.select_photo_tv);
         tv.setText("Select the menu to add a photo to start drawing!");
+
     }
 
     // returns true if the picture has not been loaded
@@ -443,36 +446,6 @@ public class MainActivity extends AppCompatActivity {
 
 }
 
-
-
-
-
-
-/*
-
-private void drawRectangle(ImageView imgV, Bitmap bm, float x1, float y1, float x, float y) {
-
-        // Load image into(as) bitmap
-        paint.setAntiAlias(true);
-        // Fill with color
-        paint.setStyle(Paint.Style.FILL);
-        // Set fill color
-        paint.setColor(Color.BLUE);
-
-        // Create Temp bitmap
-        Bitmap tBitmap = Bitmap.createBitmap(bitmapReal.getWidth(), bitmapReal.getHeight(), Bitmap.Config.RGB_565);
-        // Create a new canvas and add Bitmap into it
-        Canvas tCanvas = new Canvas(tBitmap);
-        //Draw the image bitmap into the canvas
-        tCanvas.drawBitmap(bitmapReal, 0, 0, null);
-        // Draw a rectangle over canvas
-        tCanvas.drawRoundRect(new RectF(0,0,200,100), 2, 2, paint);
-        // Add canvas into ImageView
-        imageView.setImageDrawable(new BitmapDrawable(getResources(), tBitmap));
-        imageView.invalidate();
-
-    }
- */
 
 
 
