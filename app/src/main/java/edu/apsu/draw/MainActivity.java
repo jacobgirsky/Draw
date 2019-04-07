@@ -1,10 +1,11 @@
 /*
 * Description: Clear the canvas - this feature allows the user to completely start
-over and clears the canvas so the user can start a new drawing.
+ over and clears the canvas so the user can start a new drawing.
 
 * Variables/Methods: The method uses is called clearCanvas(). This method will
-show an alert dialog asking the user if they really want to delete their masterpiece.
-If they select yes then the bitmaps eraseColor function is called setting the
+ show an alert dialog asking the user if they really want to delete their masterpiece.
+ If they select yes then the function clearCanvasHelper() is called and it uses
+ bitmaps eraseColor function is called setting the
 color to transparent. Then the imageview is set to the cleared bitmap.
  */
 
@@ -72,11 +73,11 @@ import yuku.ambilwarna.AmbilWarnaDialog;
 public class MainActivity extends AppCompatActivity {
 
     private static final int MY_PERMISSION_REQUIST = 1;
+    private static final int IMAGE1 = 100;
     ImageView imageView, imageFilter;
     EditText editText;
     Button filter_button;
     String currentImage = "";
-    private static final int IMAGE1 = 100;
     int angle;
 
     Uri source;
@@ -84,8 +85,7 @@ public class MainActivity extends AppCompatActivity {
     Canvas canvas;
     Paint paint;
 
-    int xStep;
-    int yStep;
+    int xStep, yStep;
 
     int defaultColor;
 
@@ -96,21 +96,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
 
-        //ask for storage permission:
-        if (ContextCompat.checkSelfPermission(MainActivity.this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                ActivityCompat.requestPermissions(MainActivity.this,
-                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSION_REQUIST);
+        askForPermission();
 
-            } else {
-                ActivityCompat.requestPermissions(MainActivity.this,
-                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSION_REQUIST);
-            }
-        } else {
-            // do nothing
-        }
+
         imageView = findViewById(R.id.result);
         imageFilter = findViewById(R.id.filter);
         editText = findViewById(R.id.editText);
@@ -132,11 +120,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.save_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                View content = findViewById(R.id.lay);
-                //Bitmap bitmap = getScreenShot(content);
-                bitmapReal= getScreenShot(content);
-                currentImage = "image" + System.currentTimeMillis() + ".png";
-                store(bitmapReal, currentImage);
+                savePhoto();
             }
 
         });
@@ -148,9 +132,6 @@ public class MainActivity extends AppCompatActivity {
                 imageView.invalidate();
             }
         });
-
-
-
 
 
         // gets the touch input from the user
@@ -179,6 +160,24 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    // asks the user for permissions to use the gallery
+    private void askForPermission() {
+        //ask for storage permission:
+        if (ContextCompat.checkSelfPermission(MainActivity.this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                ActivityCompat.requestPermissions(MainActivity.this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSION_REQUIST);
+
+            } else {
+                ActivityCompat.requestPermissions(MainActivity.this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSION_REQUIST);
+            }
+        }
+    }
+
+    // creates a screenshot of the bitmap
     private static Bitmap getScreenShot(View view){
         view.setDrawingCacheEnabled(true);
         Bitmap bitmap = Bitmap.createBitmap(view.getDrawingCache());
@@ -187,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // allows the user to change the pen color
-    // Gto fromitneem
+    // Got from https://github.com/yukuku/ambilwarna
     public void openColorPicker() {
         AmbilWarnaDialog colorPicker = new AmbilWarnaDialog(this, defaultColor, new AmbilWarnaDialog.OnAmbilWarnaListener() {
             @Override
@@ -226,7 +225,6 @@ public class MainActivity extends AppCompatActivity {
         Bitmap bitmap;
 
         if (resultCode == RESULT_OK) {
-
 
             if (requestCode == IMAGE1) {
                 source = data.getData();
@@ -267,55 +265,67 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.action_add_photo) {
-            openGallery();
-        }
-         else if (id == R.id.action_change_color) {
-             openColorPicker();
-        } else if (id == R.id.action_clear_canvas) {
-             clearCanvas();
-        } else if (id == R.id.action_change_brush_size) {
-             changeBrushSize();
-        } else if (id == R.id.action_draw_rectangle) {
-             drawRectangle(imageView,bitmapReal,xStep,yStep,xStep,yStep);
-        }
-        else if (id == R.id.action_add_text) {
-          addText();
+        switch (id) {
+            case R.id.action_add_photo:
+                openGallery();
+                break;
+            case R.id.action_change_color:
+                openColorPicker();
+                break;
+            case R.id.action_clear_canvas:
+                clearCanvas();
+                break;
+            case R.id.action_change_brush_size:
+                changeBrushSize();
+                break;
+            case R.id.action_draw_rectangle:
+                drawRectangle();
+                break;
+            case R.id.action_add_text:
+                addText();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void drawRectangle(ImageView imgV, Bitmap bm, float x1, float y1, float x, float y) {
+    // draws a rectangle on the screen
+    private void drawRectangle() {
 
-        // Load image into(as) bitmap
-        paint.setAntiAlias(true);
-        // Fill with color
-        paint.setStyle(Paint.Style.FILL);
-        // Set fill color
-        paint.setColor(Color.BLUE);
+        if (isPictureLoaded()) {
+            paint.setAntiAlias(true);
+            paint.setStyle(Paint.Style.FILL);
+            paint.setColor(Color.BLUE);
 
-        // Create Temp bitmap
-        Bitmap tBitmap = Bitmap.createBitmap(bitmapReal.getWidth(), bitmapReal.getHeight(), Bitmap.Config.RGB_565);
-        // Create a new canvas and add Bitmap into it
-        Canvas tCanvas = new Canvas(tBitmap);
-        //Draw the image bitmap into the canvas
-        tCanvas.drawBitmap(bitmapReal, 0, 0, null);
-        // Draw a rectangle over canvas
-        tCanvas.drawRoundRect(new RectF(0,0,200,100), 2, 2, paint);
-        // Add canvas into ImageView
-        imageView.setImageDrawable(new BitmapDrawable(getResources(), tBitmap));
-        imageView.invalidate();
+            Bitmap tBitmap = Bitmap.createBitmap(bitmapReal.getWidth(), bitmapReal.getHeight(), Bitmap.Config.RGB_565);
+
+            Canvas tCanvas = new Canvas(tBitmap);
+
+            tCanvas.drawBitmap(bitmapReal, 0, 0, null);
+
+            tCanvas.drawRect(100, 100, 600, 600, paint);
+   
+            imageView.setImageDrawable(new BitmapDrawable(getResources(), tBitmap));
+            imageView.invalidate();
+        }
+        else {
+            Toast.makeText(this, "Please load a photo first!", Toast.LENGTH_SHORT).show();
+        }
 
     }
 
+    // allows the user to add custom fonts to the photo.
     private void addText() {
-        //EditText et = new EditText(getApplicationContext());
-        editText.setVisibility(View.VISIBLE);
 
-        Typeface custom_font = Typeface.createFromAsset(getAssets(),  "NicRegular.ttf");
+        if (isPictureLoaded()) {
+            editText.setVisibility(View.VISIBLE);
 
-        editText.setTypeface(custom_font);
-        imageView.invalidate();
+            Typeface custom_font = Typeface.createFromAsset(getAssets(), "NicRegular.ttf");
+
+            editText.setTypeface(custom_font);
+            imageView.invalidate();
+        } else {
+            Toast.makeText(this, "Please load a photo first!", Toast.LENGTH_SHORT).show();
+        }
     }
 
     // set up the paint for initial drawing
@@ -349,13 +359,11 @@ public class MainActivity extends AppCompatActivity {
                 String youEditTextValue = edittext.getText().toString();
                 int result = Integer.parseInt(youEditTextValue);
                 paint.setStrokeWidth(result);
-
             }
         });
 
         alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-
             }
         });
 
@@ -371,15 +379,7 @@ public class MainActivity extends AppCompatActivity {
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface arg0, int arg1) {
-                            bitmapReal.eraseColor(Color.TRANSPARENT);
-                            imageView.setImageBitmap(bitmapReal);
-                            imageView.invalidate();
-                            imageFilter.setImageDrawable(null);
-                            filter_button.setEnabled(false);
-                            editText.setText("");
-                            editText.setVisibility(View.INVISIBLE);
-                            TextView tv = findViewById(R.id.select_photo_tv);
-                            tv.setText("Select the menu to add a photo to start drawing!");
+                            clearCanvasHelper();
                         }
                     });
 
@@ -393,7 +393,41 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // saving the image in internal storage:
+    // helper method for clear canvas
+    public void clearCanvasHelper() {
+        bitmapReal.eraseColor(Color.TRANSPARENT);
+        imageView.setImageBitmap(bitmapReal);
+        imageView.invalidate();
+        imageFilter.setImageDrawable(null);
+        filter_button.setEnabled(false);
+        editText.setText("");
+        editText.setVisibility(View.INVISIBLE);
+        TextView tv = findViewById(R.id.select_photo_tv);
+        tv.setText("Select the menu to add a photo to start drawing!");
+    }
+
+    // returns true if the picture has not been loaded
+    private boolean isPictureLoaded() {
+        if (imageView.getDrawable() != null)
+            return true;
+        else
+            return false;
+    }
+
+    // saves the photo
+    private void savePhoto() {
+        if (isPictureLoaded()) {
+            View content = findViewById(R.id.lay);
+            bitmapReal = getScreenShot(content);
+            currentImage = "image" + System.currentTimeMillis() + ".png";
+            store(bitmapReal, currentImage);
+        }
+        else {
+            Toast.makeText(this, "Please load a photo first!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    // stores the image in internal storage:
     private void store(Bitmap bm, String fileName){
         String dirPath = Environment.getExternalStorageDirectory().getAbsolutePath()+ "/FILTEREDIMAGES";
         File dir = new File(dirPath);
@@ -416,6 +450,36 @@ public class MainActivity extends AppCompatActivity {
 
 }
 
+
+
+
+
+
+/*
+
+private void drawRectangle(ImageView imgV, Bitmap bm, float x1, float y1, float x, float y) {
+
+        // Load image into(as) bitmap
+        paint.setAntiAlias(true);
+        // Fill with color
+        paint.setStyle(Paint.Style.FILL);
+        // Set fill color
+        paint.setColor(Color.BLUE);
+
+        // Create Temp bitmap
+        Bitmap tBitmap = Bitmap.createBitmap(bitmapReal.getWidth(), bitmapReal.getHeight(), Bitmap.Config.RGB_565);
+        // Create a new canvas and add Bitmap into it
+        Canvas tCanvas = new Canvas(tBitmap);
+        //Draw the image bitmap into the canvas
+        tCanvas.drawBitmap(bitmapReal, 0, 0, null);
+        // Draw a rectangle over canvas
+        tCanvas.drawRoundRect(new RectF(0,0,200,100), 2, 2, paint);
+        // Add canvas into ImageView
+        imageView.setImageDrawable(new BitmapDrawable(getResources(), tBitmap));
+        imageView.invalidate();
+
+    }
+ */
 
 
 
