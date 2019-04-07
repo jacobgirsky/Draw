@@ -1,3 +1,24 @@
+/*
+* Description: Clear the canvas - this feature allows the user to completely start
+over and clears the canvas so the user can start a new drawing.
+
+* Variables/Methods: The method uses is called clearCanvas(). This method will
+show an alert dialog asking the user if they really want to delete their masterpiece.
+If they select yes then the bitmaps eraseColor function is called setting the
+color to transparent. Then the imageview is set to the cleared bitmap.
+ */
+
+
+/*
+* Description: Rotate photo - this feature allows the user to rotate the photo 90
+ degrees each time the button is pressed.
+
+* Variables/Methods: The onClickListener is set up with the button so that when it
+ is pressed a variable called angle will be updated each time subtracting
+ 90 from it. Then the imageviews setRotation() method is called passing the
+ angle in for the parameter.
+ */
+
 package edu.apsu.draw;
 
 import android.Manifest;
@@ -12,13 +33,9 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Path;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
-import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
