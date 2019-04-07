@@ -88,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
     int xStep, yStep;
 
     int defaultColor;
+    boolean drawRecatangle = false;
 
 
     @SuppressLint("ClickableViewAccessibility")
@@ -144,16 +145,19 @@ public class MainActivity extends AppCompatActivity {
                 int x = (int) event.getX();
                 int y = (int) event.getY();
 
-                if (eventAction == MotionEvent.ACTION_DOWN) {
+                if (eventAction == MotionEvent.ACTION_DOWN && drawRecatangle == true) {
                     xStep = x;
                     yStep = y;
-                    drawOnBitMap((ImageView) v, bitmapReal, xStep, yStep, x, y);
+                    drawRectangleOnBitMap((ImageView) v, bitmapReal, xStep, yStep, x, y);
                 } else if (eventAction == MotionEvent.ACTION_MOVE) {
-                    drawOnBitMap((ImageView) v, bitmapReal, xStep, yStep, x, y);
+                    if (drawRecatangle == true) {
+                        drawRecatangle = false;
+                    }
+                    drawLindOnBitMap((ImageView) v, bitmapReal, xStep, yStep, x, y);
                     xStep = x;
                     yStep = y;
                 } else if (eventAction == MotionEvent.ACTION_UP) {
-                    drawOnBitMap((ImageView) v, bitmapReal, xStep, yStep, x, y);
+                    drawLindOnBitMap((ImageView) v, bitmapReal, xStep, yStep, x, y);
                 }
                 return true;
             }
@@ -204,8 +208,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    // get position of image so the bitmap can draw on it
-    private void drawOnBitMap(ImageView imgV, Bitmap bm, float x1, float y1, float x, float y) {
+    // draws the line on the position of the bitmap
+    private void drawLindOnBitMap(ImageView imgV, Bitmap bm, float x1, float y1, float x, float y) {
         if (x < 0 || y < 0 || x > imgV.getWidth() || y > imgV.getHeight()) { // if it is outside of the image
             return;
         } else {
@@ -214,6 +218,20 @@ public class MainActivity extends AppCompatActivity {
             float height = (float) bm.getHeight() / (float) imgV.getHeight();
 
             canvas.drawLine(x1 * width, y1 * height, x * width, y * height, paint);
+            imageView.invalidate();
+        }
+    }
+
+    // draws the line on the position of the bitmap
+    private void drawRectangleOnBitMap(ImageView imgV, Bitmap bm, float x1, float y1, float x, float y) {
+        if (x < 0 || y < 0 || x > imgV.getWidth() || y > imgV.getHeight()) { // if it is outside of the image
+            return;
+        } else {
+
+            float width = (float) bm.getWidth() / (float) imgV.getWidth();
+            float height = (float) bm.getHeight() / (float) imgV.getHeight();
+
+            canvas.drawRect(x1 * width * 2, y1 * height * 2, x * width, y * height, paint);
             imageView.invalidate();
         }
     }
@@ -279,38 +297,13 @@ public class MainActivity extends AppCompatActivity {
                 changeBrushSize();
                 break;
             case R.id.action_draw_rectangle:
-                drawRectangle();
+                drawRecatangle = true;
                 break;
             case R.id.action_add_text:
                 addText();
                 break;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    // draws a rectangle on the screen
-    private void drawRectangle() {
-
-        if (isPictureLoaded()) {
-            paint.setAntiAlias(true);
-            paint.setStyle(Paint.Style.FILL);
-            paint.setColor(Color.BLUE);
-
-            Bitmap tBitmap = Bitmap.createBitmap(bitmapReal.getWidth(), bitmapReal.getHeight(), Bitmap.Config.RGB_565);
-
-            Canvas tCanvas = new Canvas(tBitmap);
-
-            tCanvas.drawBitmap(bitmapReal, 0, 0, null);
-
-            tCanvas.drawRect(100, 100, 600, 600, paint);
-   
-            imageView.setImageDrawable(new BitmapDrawable(getResources(), tBitmap));
-            imageView.invalidate();
-        }
-        else {
-            Toast.makeText(this, "Please load a photo first!", Toast.LENGTH_SHORT).show();
-        }
-
     }
 
     // allows the user to add custom fonts to the photo.
