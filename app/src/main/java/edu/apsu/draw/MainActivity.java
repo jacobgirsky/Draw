@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
     int xStep, yStep;
 
     int defaultColor;
-    boolean drawRecatangle = false;
+    boolean drawRectangle = false;
 
 
     @SuppressLint("ClickableViewAccessibility")
@@ -168,13 +168,13 @@ public class MainActivity extends AppCompatActivity {
                 int x = (int) event.getX();
                 int y = (int) event.getY();
 
-                if (eventAction == MotionEvent.ACTION_DOWN && drawRecatangle == true) {
+                if (eventAction == MotionEvent.ACTION_DOWN && drawRectangle == true) {
                     xStep = x;
                     yStep = y;
                     drawRectangleOnBitMap((ImageView) v, bitmapReal, xStep, yStep, x, y);
                 } else if (eventAction == MotionEvent.ACTION_MOVE) {
-                    if (drawRecatangle == true) {
-                        drawRecatangle = false;
+                    if (drawRectangle == true) {
+                        drawRectangle = false;
                     }
                     drawLindOnBitMap((ImageView) v, bitmapReal, xStep, yStep, x, y);
                     xStep = x;
@@ -320,7 +320,7 @@ public class MainActivity extends AppCompatActivity {
                 changeBrushSize();
                 break;
             case R.id.action_draw_rectangle:
-                drawRecatangle = true;
+                drawRectangle = true;
                 break;
             case R.id.action_add_text:
                 addText();
