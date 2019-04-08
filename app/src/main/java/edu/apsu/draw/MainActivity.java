@@ -157,6 +157,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+
         // gets the touch input from the user
         imageView.setOnTouchListener(new View.OnTouchListener() {
 

@@ -39,7 +39,7 @@
             android:layout_alignParentBottom="true"
             android:gravity="center"
             android:layout_centerInParent="true"
-            android:textSize="30sp"
+            android:textSize="35sp"
             android:background="@android:color/transparent"
             android:inputType="textMultiLine|textVisiblePassword"/>
     </RelativeLayout>
