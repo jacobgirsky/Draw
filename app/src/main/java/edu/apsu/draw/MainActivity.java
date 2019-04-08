@@ -44,31 +44,22 @@ package edu.apsu.draw;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.RectF;
 import android.graphics.Typeface;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.Html;
-import android.text.method.LinkMovementMethod;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -83,16 +74,12 @@ import android.widget.Toast;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
 import yuku.ambilwarna.AmbilWarnaDialog;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final int MY_PERMISSION_REQUIST = 1;
+    private static final int MY_PERMISSION_REQUEST = 1;
     private static final int IMAGE1 = 100;
     ImageView imageView, imageFilter;
     EditText editText;
@@ -157,7 +144,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-
         // gets the touch input from the user
         imageView.setOnTouchListener(new View.OnTouchListener() {
 
@@ -171,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
                 if (eventAction == MotionEvent.ACTION_DOWN && drawRectangle == true) {
                     xStep = x;
                     yStep = y;
-                    drawRectangleOnBitMap((ImageView) v, bitmapReal, xStep, yStep, x, y);
+                    drawLindOnBitMap((ImageView) v, bitmapReal, xStep, yStep, x, y);
                 } else if (eventAction == MotionEvent.ACTION_MOVE) {
                     if (drawRectangle == true) {
                         drawRectangle = false;
@@ -189,17 +175,15 @@ public class MainActivity extends AppCompatActivity {
 
     // asks the user for permissions to use the gallery
     private void askForPermission() {
-        //ask for storage permission:
         if (ContextCompat.checkSelfPermission(MainActivity.this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                 ActivityCompat.requestPermissions(MainActivity.this,
-                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSION_REQUIST);
-
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSION_REQUEST);
             } else {
                 ActivityCompat.requestPermissions(MainActivity.this,
-                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSION_REQUIST);
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSION_REQUEST);
             }
         }
     }
@@ -241,20 +225,9 @@ public class MainActivity extends AppCompatActivity {
             float height = (float) bm.getHeight() / (float) imgV.getHeight();
 
             canvas.drawLine(x1 * width, y1 * height, x * width, y * height, paint);
-            imageView.invalidate();
-        }
-    }
-
-    // draws the line on the position of the bitmap
-    private void drawRectangleOnBitMap(ImageView imgV, Bitmap bm, float x1, float y1, float x, float y) {
-        if (x < 0 || y < 0 || x > imgV.getWidth() || y > imgV.getHeight()) { // if it is outside of the image
-            return;
-        } else {
-
-            float width = (float) bm.getWidth() / (float) imgV.getWidth();
-            float height = (float) bm.getHeight() / (float) imgV.getHeight();
-
-            canvas.drawRect(x1 * width * 2, y1 * height * 2, x * width, y * height, paint);
+            if (drawRectangle) {
+                canvas.drawRect(x1 * width * 2, y1 * height * 2, x * width, y * height, paint);
+            }
             imageView.invalidate();
         }
     }
@@ -464,7 +437,6 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
-
 }
 
 
