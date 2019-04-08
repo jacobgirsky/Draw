@@ -20,6 +20,26 @@ color to transparent. Then the imageview is set to the cleared bitmap.
  angle in for the parameter.
  */
 
+/*
+* Description: Add Text - this feature allows the user to add text to the imageview.
+
+* Variables/Methods: The method uses is called addText(). When the user select add text from the
+* menu, this method will check if there is a picture loaded to the canvas , if yes, it will
+* set the edittext to be visible and add a custom font typeface to it. and the user will be able
+* to add text to the image. Otherwise, a toast will appear asking the user to load a photo first.
+
+ */
+
+/*
+ * Description: Apply Filter - this feature allows the user to apply a filter to the imageview.
+
+ * Variables/Methods: The onClickListener is set up with the filter_button so that when it is
+ * clicked, it will set the image resource of an imageview called image_filter to the filter image.
+ * This way, the filter image will appear on top of the image in which the user is editing.
+ * The filter_button is setEnabled to false tell the user upload a photo.
+
+ */
+
 package edu.apsu.draw;
 
 import android.Manifest;
