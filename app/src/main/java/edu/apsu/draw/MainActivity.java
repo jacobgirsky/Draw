@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
     int angle;
 
     Uri source;
-    Bitmap bitmapReal;
+    Bitmap bitmapReal = null;
     Canvas canvas;
     Paint paint;
 
@@ -221,14 +221,16 @@ public class MainActivity extends AppCompatActivity {
             return;
         } else {
 
-            float width = (float) bm.getWidth() / (float) imgV.getWidth();
-            float height = (float) bm.getHeight() / (float) imgV.getHeight();
+            if (bitmapReal != null) {
+                float width = (float) bm.getWidth() / (float) imgV.getWidth();
+                float height = (float) bm.getHeight() / (float) imgV.getHeight();
 
-            canvas.drawLine(x1 * width, y1 * height, x * width, y * height, paint);
-            if (drawRectangle) {
-                canvas.drawRect(x1 * width * 2, y1 * height * 2, x * width, y * height, paint);
+                canvas.drawLine(x1 * width, y1 * height, x * width, y * height, paint);
+                if (drawRectangle) {
+                    canvas.drawRect(x1 * width * 2, y1 * height * 2, x * width, y * height, paint);
+                }
+                imageView.invalidate();
             }
-            imageView.invalidate();
         }
     }
 
